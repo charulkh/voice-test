@@ -3,43 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EHS TACTICAL - VOICE UPLOAD V3</title>
+  <title>EHS TACTICAL - VOICE UPLOAD V4</title>
   <style>
-    body { font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding-top: 5vh; height: 95vh; margin: 0; background-color: #000000; color: #aaaaaa; overflow: hidden; }
+    body { font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding-top: 2vh; height: 98vh; margin: 0; background-color: #000000; color: #aaaaaa; overflow-x: hidden; }
     body::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none; }
 
-    #header-area { text-align: center; margin-bottom: 15px; z-index: 20;}
-    h1 { font-size: 32px; color: #ff0000; text-shadow: 0 0 10px #ff0000; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;}
+    #header-area { text-align: center; margin-bottom: 10px; z-index: 20;}
+    h1 { font-size: 32px; color: #ff0000; text-shadow: 0 0 10px #ff0000; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 2px;}
     #subheader { font-size: 14px; color: #aaaaaa; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* Language Selector Styles */
-    .lang-container { z-index: 20; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;}
+    .lang-container { z-index: 20; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center;}
     label { font-size: 12px; color: #ff0000; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;}
-    select { background-color: rgba(0, 0, 0, 0.8); color: #00ff00; border: 1px solid #ff0000; padding: 8px 15px; font-family: 'Courier New', Courier, monospace; font-size: 16px; outline: none; cursor: pointer; text-transform: uppercase;}
-    select:focus { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
-
-    .btn { font-family: 'Courier New', Courier, monospace; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; padding: 15px 30px; cursor: pointer; background-color: transparent; position: relative; transition: 0.3s; z-index: 20; margin: 5px; }
+    select { background-color: rgba(0, 0, 0, 0.8); color: #00ff00; border: 1px solid #ff0000; padding: 5px 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; outline: none; cursor: pointer; text-transform: uppercase;}
+    
+    .btn { font-family: 'Courier New', Courier, monospace; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; padding: 12px 25px; cursor: pointer; background-color: transparent; position: relative; transition: 0.3s; z-index: 20; margin: 5px; }
     
     #micBtn { color: #ff0000; border: 2px solid #ff0000; box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); }
     #micBtn:hover { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); transform: scale(1.02); }
     #micBtn.recording { background-color: #ff0000 !important; color: #ffffff !important; animation: rec_pulse 1.5s infinite; box-shadow: 0 0 30px #ff0000; }
 
-    #submitBtn { color: #00ff00; border: 2px solid #00ff00; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); display: none; margin-top: 15px;}
+    #submitBtn { color: #00ff00; border: 2px solid #00ff00; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); display: none; margin-top: 10px;}
     #submitBtn:hover { box-shadow: 0 0 20px rgba(0, 255, 0, 0.6); background-color: #003300;}
 
     @keyframes rec_pulse { 0% { opacity: 1; transform: scale(1.02); } 50% { opacity: 0.8; transform: scale(1); } 100% { opacity: 1; transform: scale(1.02); } }
 
-    /* Tactical Text Area */
-    #data-terminal { width: 80%; max-width: 600px; margin-top: 15px; z-index: 20; display: flex; flex-direction: column; align-items: stretch;}
-    .terminal-header { background-color: #ff0000; color: #000; padding: 5px 10px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between;}
-    textarea { background-color: rgba(0, 0, 0, 0.7); color: #00ff00; border: 2px solid #ff0000; border-top: none; font-family: 'Courier New', Courier, monospace; font-size: 16px; padding: 15px; height: 100px; resize: none; outline: none; box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1); }
-    textarea:focus { border-color: #00ff00; box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.3); }
+    /* Terminal Layout */
+    .terminals-wrapper { display: flex; flex-direction: column; width: 80%; max-width: 600px; z-index: 20; gap: 10px;}
+    
+    .data-terminal { display: flex; flex-direction: column; align-items: stretch;}
+    .terminal-header { background-color: #ff0000; color: #000; padding: 5px 10px; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;}
+    .terminal-header.blue { background-color: #00aaff; }
+    
+    textarea { background-color: rgba(0, 0, 0, 0.7); color: #00ff00; border: 2px solid #ff0000; border-top: none; font-family: 'Courier New', Courier, monospace; font-size: 14px; padding: 10px; height: 80px; resize: none; outline: none; box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1); }
+    textarea.blue-text { color: #00aaff; border-color: #00aaff; box-shadow: inset 0 0 10px rgba(0, 170, 255, 0.1);}
+    textarea:focus { border-color: #00ff00; }
 
-    #status { margin-top: 10px; font-size: 14px; color: #00ff00; text-align: center; text-transform: uppercase; z-index: 20;}
+    #translation-terminal { display: none; } /* Hidden by default */
+
+    #status { margin-top: 10px; font-size: 14px; color: #00ff00; text-align: center; text-transform: uppercase; z-index: 20; height: 20px;}
     .processing { color: #ff9800; animation: blinker 1s linear infinite; }
     @keyframes blinker { 50% { opacity: 0; } }
 
-    #system-footer { position: absolute; bottom: 0; width: 100%; border-top: 1px solid #333; padding: 10px 0; display: flex; justify-content: space-around; font-size: 10px; color: #555; text-transform: uppercase; z-index: 20; background-color: #000;}
+    #system-footer { position: fixed; bottom: 0; width: 100%; border-top: 1px solid #333; padding: 10px 0; display: flex; justify-content: space-around; font-size: 10px; color: #555; text-transform: uppercase; z-index: 20; background-color: #000;}
     #status-dot { height: 8px; width: 8px; background-color: #00ff00; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blinker 2s linear infinite;}
   </style>
 </head>
@@ -47,37 +52,41 @@
 
   <div id="header-area">
     <h1>EHS Speak Up</h1>
-    <p id="subheader">Voice Incident Reporting System</p>
+    <p id="subheader">Global Voice Reporting Interface</p>
   </div>
 
   <div class="lang-container">
     <label for="langSelect">Target Input Language</label>
     <select id="langSelect">
       <option value="en-US">English</option>
-      <option value="th-TH">Thai (ภาษาไทย)</option>
-      <option value="vi-VN">Vietnamese (Tiếng Việt)</option>
-      <option value="id-ID">Indonesian (Bahasa Indonesia)</option>
       <option value="ms-MY">Malay (Bahasa Melayu)</option>
-      <option value="fil-PH">Filipino (Tagalog)</option>
-      <option value="zh-CN">Chinese (中文)</option>
+      <option value="ta-IN">Tamil (தமிழ்)</option>
+      <option value="vi-VN">Vietnamese (Tiếng Việt)</option>
+      <option value="th-TH">Thai (ภาษาไทย)</option>
+      <option value="id-ID">Indonesian (Bahasa Indonesia)</option>
     </select>
   </div>
 
   <button id="micBtn" class="btn">🎤 Initiate Input</button>
 
-  <div id="data-terminal">
-    <div class="terminal-header">
-      <span>Live Transcription Data</span>
+  <div class="terminals-wrapper">
+    <div class="data-terminal">
+      <div class="terminal-header">Raw Native Audio Feed</div>
+      <textarea id="transcriptBox" placeholder="Awaiting voice input..."></textarea>
     </div>
-    <textarea id="transcriptBox" placeholder="Awaiting voice input... You may also type or edit text here before submitting."></textarea>
+
+    <div class="data-terminal" id="translation-terminal">
+      <div class="terminal-header blue">Encrypted English Translation</div>
+      <textarea id="translationBox" class="blue-text" placeholder="Translating payload..."></textarea>
+    </div>
   </div>
   
-  <button id="submitBtn" class="btn">💾 UPLOAD SECURE DATA</button>
+  <button id="submitBtn" class="btn">💾 UPLOAD TO SECURE SERVER</button>
   
-  <p id="status">System Status: Ready for activation.</p>
+  <p id="status">System Status: Ready.</p>
 
   <div id="system-footer">
-    <div>ASEAN EHS DIV // V.3.0 // S/N: AD-679903</div>
+    <div>ASEAN EHS DIV // V.4.0 // TRANSLATION NODE ACTIVE</div>
     <div><span id="status-dot"></span>System: Online</div>
     <div>Encryption: Active // Secure Line</div>
   </div>
@@ -86,6 +95,8 @@
     const micBtn = document.getElementById('micBtn');
     const submitBtn = document.getElementById('submitBtn');
     const transcriptBox = document.getElementById('transcriptBox');
+    const translationBox = document.getElementById('translationBox');
+    const translationTerminal = document.getElementById('translation-terminal');
     const statusText = document.getElementById('status');
     const langSelect = document.getElementById('langSelect');
     
@@ -94,7 +105,7 @@
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
-      statusText.innerText = "CRITICAL ERROR: Speech recognition not supported in this environment.";
+      statusText.innerText = "CRITICAL ERROR: Speech recognition not supported.";
       micBtn.style.display = 'none';
     } else {
       const recognition = new SpeechRecognition();
@@ -107,20 +118,22 @@
           return;
         }
         
-        // Grab the selected language right before starting!
         recognition.lang = langSelect.value;
-        
-        finalTranscript = transcriptBox.value; 
+        finalTranscript = ''; 
+        transcriptBox.value = '';
+        translationBox.value = '';
+        translationTerminal.style.display = 'none';
+        submitBtn.style.display = 'none';
+
         try {
           recognition.start();
           micBtn.classList.add('recording');
           micBtn.innerText = "🛑 STOP INPUT";
-          statusText.innerText = "Listening... Transcribing audio data live.";
+          statusText.innerText = "Listening... Intercepting native audio.";
           statusText.classList.remove('processing');
           statusText.style.color = "#00ff00";
-          submitBtn.style.display = 'none';
         } catch (e) {
-          statusText.innerText = "System Error: Recognition already active.";
+          statusText.innerText = "System Error: Mic already active.";
         }
       });
 
@@ -139,11 +152,48 @@
       recognition.onend = () => {
         micBtn.classList.remove('recording');
         micBtn.innerText = "🎤 RESUME INPUT";
-        statusText.innerText = "AUDIO CAPTURED. PLEASE REVIEW OR EDIT DATA.";
-        statusText.style.color = "#00ff00";
         
-        if(transcriptBox.value.trim().length > 0) {
-            submitBtn.style.display = 'inline-block';
+        const rawText = transcriptBox.value.trim();
+
+        if (rawText.length > 0) {
+            // If English, just show the submit button
+            if (langSelect.value === 'en-US') {
+                statusText.innerText = "AUDIO CAPTURED. READY FOR UPLOAD.";
+                statusText.style.color = "#00ff00";
+                submitBtn.style.display = 'inline-block';
+            } else {
+                // If not English, trigger the translation API!
+                statusText.innerText = "TRANSLATING SECURE PAYLOAD...";
+                statusText.style.color = "#ff9800";
+                statusText.classList.add('processing');
+                translationTerminal.style.display = 'flex';
+                translationBox.value = "Pinging translation server...";
+
+                // We extract just the 2-letter code (e.g., 'vi' from 'vi-VN')
+                let sourceLang = langSelect.value.split('-')[0];
+                let apiURL = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(rawText)}&langpair=${sourceLang}|en`;
+
+                fetch(apiURL)
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.responseData && data.responseData.translatedText) {
+                          translationBox.value = data.responseData.translatedText;
+                          statusText.innerText = "TRANSLATION COMPLETE. AWAITING UPLOAD.";
+                      } else {
+                          translationBox.value = "[Translation API Error - Manual review required]";
+                          statusText.innerText = "TRANSLATION FAILED. PROCEEDING WITH RAW DATA.";
+                      }
+                      statusText.style.color = "#00ff00";
+                      statusText.classList.remove('processing');
+                      submitBtn.style.display = 'inline-block';
+                  })
+                  .catch(error => {
+                      translationBox.value = "[Translation API Offline]";
+                      statusText.innerText = "TRANSLATION ERROR.";
+                      statusText.classList.remove('processing');
+                      submitBtn.style.display = 'inline-block';
+                  });
+            }
         }
       };
 
@@ -154,30 +204,26 @@
         micBtn.innerText = "🎤 INITIATE INPUT";
       };
 
-      transcriptBox.addEventListener('input', () => {
-         if(transcriptBox.value.trim().length > 0) {
-            submitBtn.style.display = 'inline-block';
-         } else {
-            submitBtn.style.display = 'none';
-         }
-      });
-
       submitBtn.addEventListener('click', () => {
         statusText.innerText = "ENCRYPTING AND UPLOADING DATA PACKET...";
         statusText.classList.add('processing');
         submitBtn.style.display = 'none';
         micBtn.style.display = 'none';
-        langSelect.disabled = true;
 
-        const userText = transcriptBox.value.trim();
+        // Determine what text to send to Google Form
+        let finalUploadText = transcriptBox.value.trim();
+        if (langSelect.value !== 'en-US' && translationBox.value.length > 0 && !translationBox.value.includes("Pinging")) {
+            // Send the English translation if they used another language!
+            finalUploadText = translationBox.value.trim();
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const rowId = urlParams.get('rowId') || "No_ID_Provided";
 
-        // Your exact NEW pre-filled link
         let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdX5azkFqnQWH7ZrZ4sOE9AW7EgN4fdS4h3O9Bzhif6t2Ypng/viewform?usp=pp_url&entry.608480378=TEST_ID&entry.678632541=TEST_TEXT";
         
         formUrl = formUrl.replace("TEST_ID", encodeURIComponent(rowId));
-        formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(userText));
+        formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(finalUploadText));
 
         setTimeout(() => {
           window.location.href = formUrl;
