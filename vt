@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #121212; color: white; text-align: center; padding: 40px; margin: 0; }
+    .btn { background-color: #ff4d4d; color: white; border: none; border-radius: 50px; padding: 20px 40px; font-size: 24px; font-weight: bold; box-shadow: 0 4px 15px rgba(255, 77, 77, 0.4); cursor: pointer; margin-top: 20px; width: 80%; max-width: 300px; transition: 0.3s; }
+    .btn.recording { background-color: #cc0000; animation: pulse 1.5s infinite; }
+    .btn:active { transform: scale(0.95); }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(204, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0); } }
+    select { background-color: #333; color: white; border: 1px solid #555; border-radius: 10px; padding: 12px; font-size: 18px; margin-top: 20px; width: 80%; max-width: 300px; }
+    #status { margin-top: 30px; font-size: 18px; color: #aaa; }
+    #transcript { margin-top: 20px; font-size: 22px; font-weight: bold; color: #2ecc71; min-height: 50px; }
+  </style>
+</head>
+<body>
+
+  <h2>🎙️ Speak Up Recorder</h2>
+  
+  <select id="languageSelect">
+    <option value="en-US">English</option>
+    <option value="ms-MY">Bahasa Melayu</option>
+    <option value="id-ID">Bahasa Indonesia</option>
+    <option value="zh-CN">中文 (Mandarin)</option>
+    <option value="ta-IN">தமிழ் (Tamil)</option>
+    <option value="th-TH">ไทย (Thai)</option>
+    <option value="vi-VN">Tiếng Việt (Vietnamese)</option>
+  </select>
+  <br>
+
+  <button id="recordBtn" class="btn" onclick="toggleRecording()">🎤 Tap to Speak</button>
+  <p id="status">Ready...</p>
+  <p id="transcript"></p>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const rowId = urlParams.get('rowId');
+
+    let recognition;
+    let isRecording = false;
+    let finalTranscript = "";
+
+    function toggleRecording() {
+      if (isRecording) {
+        recognition.stop();
+        return;
+      }
+
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Voice API only works in Chrome or Safari.");
+        return;
+      }
+
+      finalTranscript = ""; 
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = document.getElementById("languageSelect").value; 
+
+      recognition.onstart = function() {
+        isRecording = true;
+        document.getElementById("status").innerHTML = "Listening... 🔴 (Tap Stop when done)";
+        document.getElementById("recordBtn").classList.add("recording");
+        document.getElementById("recordBtn").innerHTML = "⏹️ Stop Recording";
+        document.getElementById("transcript").innerHTML = ""; 
+      };
+
+      recognition.onerror = function(event) {
+        isRecording = false;
+        document.getElementById("status").innerHTML = "❌ Error: " + event.error;
+        document.getElementById("recordBtn").classList.remove("recording");
+        document.getElementById("recordBtn").innerHTML = "🎤 Try Again";
+      };
+
+      recognition.onresult = function(event) {
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + " ";
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        document.getElementById("transcript").innerHTML = '"' + finalTranscript + interimTranscript + '"';
+      };
+
+      recognition.onend = function() {
+        isRecording = false;
+        document.getElementById("recordBtn").classList.remove("recording");
+        
+        if (finalTranscript.trim() !== "") {
+          document.getElementById("status").innerHTML = "Saving... ⚙️";
+          document.getElementById("recordBtn").innerHTML = "Processing...";
+          document.getElementById("recordBtn").style.backgroundColor = "#555";
+          document.getElementById("recordBtn").disabled = true;
+          
+          sendToGoogleBackend(finalTranscript.trim());
+        } else {
+          document.getElementById("status").innerHTML = "No speech detected. Ready...";
+          document.getElementById("recordBtn").innerHTML = "🎤 Tap to Speak";
+        }
+      };
+
+      recognition.start();
+    }
+
+    function sendToGoogleBackend(text) {
+      const formId = "1FAIpQLScm3Ybfa0VptzYRvNgcqusbhKwUpKAuze7JHPb6GnLJAbhc-g"; 
+      const entryId = "entry.134202282"; 
+      const entryText = "entry.138727830"; 
+
+      const formUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse?${entryId}=${encodeURIComponent(rowId)}&${entryText}=${encodeURIComponent(text)}&submit=Submit`;
+
+      fetch(formUrl, { mode: 'no-cors' })
+        .then(() => {
+          document.getElementById("status").innerHTML = "✅ Saved! Go back to AppSheet.";
+          document.getElementById("recordBtn").style.backgroundColor = "#2ecc71";
+          document.getElementById("recordBtn").innerHTML = "Done";
+        })
+        .catch(err => {
+          document.getElementById("status").innerHTML = "❌ Connection failed.";
+          resetButton();
+        });
+    }
+
+    function resetButton() {
+      document.getElementById("recordBtn").disabled = false;
+      document.getElementById("recordBtn").style.backgroundColor = "#ff4d4d";
+      document.getElementById("recordBtn").innerHTML = "🎤 Try Again";
+    }
+  </script>
+
+</body>
+</html>
