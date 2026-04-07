@@ -3,33 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EHS TACTICAL - VOICE UPLOAD V2</title>
+  <title>EHS TACTICAL - VOICE UPLOAD V3</title>
   <style>
     body { font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding-top: 5vh; height: 95vh; margin: 0; background-color: #000000; color: #aaaaaa; overflow: hidden; }
     body::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none; }
 
-    #header-area { text-align: center; margin-bottom: 20px; z-index: 20;}
+    #header-area { text-align: center; margin-bottom: 15px; z-index: 20;}
     h1 { font-size: 32px; color: #ff0000; text-shadow: 0 0 10px #ff0000; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;}
     #subheader { font-size: 14px; color: #aaaaaa; text-transform: uppercase; letter-spacing: 1px; }
 
-    .btn { font-family: 'Courier New', Courier, monospace; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; padding: 15px 30px; cursor: pointer; background-color: transparent; position: relative; transition: 0.3s; z-index: 20; margin: 10px; }
+    /* Language Selector Styles */
+    .lang-container { z-index: 20; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;}
+    label { font-size: 12px; color: #ff0000; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;}
+    select { background-color: rgba(0, 0, 0, 0.8); color: #00ff00; border: 1px solid #ff0000; padding: 8px 15px; font-family: 'Courier New', Courier, monospace; font-size: 16px; outline: none; cursor: pointer; text-transform: uppercase;}
+    select:focus { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+
+    .btn { font-family: 'Courier New', Courier, monospace; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; padding: 15px 30px; cursor: pointer; background-color: transparent; position: relative; transition: 0.3s; z-index: 20; margin: 5px; }
     
     #micBtn { color: #ff0000; border: 2px solid #ff0000; box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); }
     #micBtn:hover { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); transform: scale(1.02); }
     #micBtn.recording { background-color: #ff0000 !important; color: #ffffff !important; animation: rec_pulse 1.5s infinite; box-shadow: 0 0 30px #ff0000; }
 
-    #submitBtn { color: #00ff00; border: 2px solid #00ff00; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); display: none; }
+    #submitBtn { color: #00ff00; border: 2px solid #00ff00; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); display: none; margin-top: 15px;}
     #submitBtn:hover { box-shadow: 0 0 20px rgba(0, 255, 0, 0.6); background-color: #003300;}
 
     @keyframes rec_pulse { 0% { opacity: 1; transform: scale(1.02); } 50% { opacity: 0.8; transform: scale(1); } 100% { opacity: 1; transform: scale(1.02); } }
 
     /* Tactical Text Area */
-    #data-terminal { width: 80%; max-width: 600px; margin-top: 10px; z-index: 20; display: flex; flex-direction: column; align-items: stretch;}
+    #data-terminal { width: 80%; max-width: 600px; margin-top: 15px; z-index: 20; display: flex; flex-direction: column; align-items: stretch;}
     .terminal-header { background-color: #ff0000; color: #000; padding: 5px 10px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between;}
-    textarea { background-color: rgba(0, 0, 0, 0.7); color: #00ff00; border: 2px solid #ff0000; border-top: none; font-family: 'Courier New', Courier, monospace; font-size: 16px; padding: 15px; height: 120px; resize: none; outline: none; box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1); }
+    textarea { background-color: rgba(0, 0, 0, 0.7); color: #00ff00; border: 2px solid #ff0000; border-top: none; font-family: 'Courier New', Courier, monospace; font-size: 16px; padding: 15px; height: 100px; resize: none; outline: none; box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1); }
     textarea:focus { border-color: #00ff00; box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.3); }
 
-    #status { margin-top: 15px; font-size: 14px; color: #00ff00; text-align: center; text-transform: uppercase; z-index: 20;}
+    #status { margin-top: 10px; font-size: 14px; color: #00ff00; text-align: center; text-transform: uppercase; z-index: 20;}
     .processing { color: #ff9800; animation: blinker 1s linear infinite; }
     @keyframes blinker { 50% { opacity: 0; } }
 
@@ -42,6 +48,19 @@
   <div id="header-area">
     <h1>EHS Speak Up</h1>
     <p id="subheader">Voice Incident Reporting System</p>
+  </div>
+
+  <div class="lang-container">
+    <label for="langSelect">Target Input Language</label>
+    <select id="langSelect">
+      <option value="en-US">English</option>
+      <option value="th-TH">Thai (ภาษาไทย)</option>
+      <option value="vi-VN">Vietnamese (Tiếng Việt)</option>
+      <option value="id-ID">Indonesian (Bahasa Indonesia)</option>
+      <option value="ms-MY">Malay (Bahasa Melayu)</option>
+      <option value="fil-PH">Filipino (Tagalog)</option>
+      <option value="zh-CN">Chinese (中文)</option>
+    </select>
   </div>
 
   <button id="micBtn" class="btn">🎤 Initiate Input</button>
@@ -58,7 +77,7 @@
   <p id="status">System Status: Ready for activation.</p>
 
   <div id="system-footer">
-    <div>ASEAN EHS DIV // V.2.0 // S/N: AD-679902</div>
+    <div>ASEAN EHS DIV // V.3.0 // S/N: AD-679903</div>
     <div><span id="status-dot"></span>System: Online</div>
     <div>Encryption: Active // Secure Line</div>
   </div>
@@ -68,6 +87,7 @@
     const submitBtn = document.getElementById('submitBtn');
     const transcriptBox = document.getElementById('transcriptBox');
     const statusText = document.getElementById('status');
+    const langSelect = document.getElementById('langSelect');
     
     let finalTranscript = '';
 
@@ -79,17 +99,18 @@
     } else {
       const recognition = new SpeechRecognition();
       recognition.continuous = true; 
-      recognition.interimResults = true; // This is the magic for LIVE typing
+      recognition.interimResults = true; 
 
       micBtn.addEventListener('click', () => {
-        // If already recording, stop it
         if (micBtn.classList.contains('recording')) {
           recognition.stop();
           return;
         }
         
-        // Start recording
-        finalTranscript = transcriptBox.value; // Save whatever is already in the box
+        // Grab the selected language right before starting!
+        recognition.lang = langSelect.value;
+        
+        finalTranscript = transcriptBox.value; 
         try {
           recognition.start();
           micBtn.classList.add('recording');
@@ -112,7 +133,6 @@
             interimTranscript += event.results[i][0].transcript;
           }
         }
-        // Push the live text into the editable box
         transcriptBox.value = finalTranscript + interimTranscript;
       };
 
@@ -122,7 +142,6 @@
         statusText.innerText = "AUDIO CAPTURED. PLEASE REVIEW OR EDIT DATA.";
         statusText.style.color = "#00ff00";
         
-        // Show the upload button if there is actually text to send
         if(transcriptBox.value.trim().length > 0) {
             submitBtn.style.display = 'inline-block';
         }
@@ -135,7 +154,6 @@
         micBtn.innerText = "🎤 INITIATE INPUT";
       };
 
-      // Show upload button if they manually type instead of speaking
       transcriptBox.addEventListener('input', () => {
          if(transcriptBox.value.trim().length > 0) {
             submitBtn.style.display = 'inline-block';
@@ -144,19 +162,19 @@
          }
       });
 
-      // The final save/redirect!
       submitBtn.addEventListener('click', () => {
         statusText.innerText = "ENCRYPTING AND UPLOADING DATA PACKET...";
         statusText.classList.add('processing');
         submitBtn.style.display = 'none';
         micBtn.style.display = 'none';
+        langSelect.disabled = true;
 
         const userText = transcriptBox.value.trim();
         const urlParams = new URLSearchParams(window.location.search);
         const rowId = urlParams.get('rowId') || "No_ID_Provided";
 
-        // Your exact pre-filled link
-        let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScm3Ybfa0VptzYRvNgcqusbhKwUpKAuze7JHPb6GnLJAbhc-g/viewform?usp=pp_url&entry.134202282=TEST_ID&entry.138727830=TEST_TEXT";
+        // Your exact NEW pre-filled link
+        let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdX5azkFqnQWH7ZrZ4sOE9AW7EgN4fdS4h3O9Bzhif6t2Ypng/viewform?usp=pp_url&entry.608480378=TEST_ID&entry.678632541=TEST_TEXT";
         
         formUrl = formUrl.replace("TEST_ID", encodeURIComponent(rowId));
         formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(userText));
