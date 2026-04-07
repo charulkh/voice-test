@@ -1,132 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Input Demo</title>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #121212; color: white; text-align: center; padding: 40px; margin: 0; }
-    .btn { background-color: #ff4d4d; color: white; border: none; border-radius: 50px; padding: 20px 40px; font-size: 24px; font-weight: bold; box-shadow: 0 4px 15px rgba(255, 77, 77, 0.4); cursor: pointer; margin-top: 20px; width: 80%; max-width: 300px; transition: 0.3s; }
-    .btn.recording { background-color: #cc0000; animation: pulse 1.5s infinite; }
-    .btn:active { transform: scale(0.95); }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(204, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0); } }
-    select { background-color: #333; color: white; border: 1px solid #555; border-radius: 10px; padding: 12px; font-size: 18px; margin-top: 20px; width: 80%; max-width: 300px; }
-    #status { margin-top: 30px; font-size: 18px; color: #aaa; }
-    #transcript { margin-top: 20px; font-size: 22px; font-weight: bold; color: #2ecc71; min-height: 50px; }
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
+    button { font-size: 24px; padding: 20px 40px; border-radius: 50px; background-color: #4CAF50; color: white; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s; }
+    button.recording { background-color: #f44336; animation: pulse 1.5s infinite; }
+    #status { margin-top: 20px; font-size: 18px; color: #333; text-align: center; padding: 0 20px;}
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
   </style>
 </head>
 <body>
 
-  <h2>🎙️ Speak Up Recorder</h2>
-  
-  <select id="languageSelect">
-    <option value="en-US">English</option>
-    <option value="ms-MY">Bahasa Melayu</option>
-    <option value="id-ID">Bahasa Indonesia</option>
-    <option value="zh-CN">中文 (Mandarin)</option>
-    <option value="ta-IN">தமிழ் (Tamil)</option>
-    <option value="th-TH">ไทย (Thai)</option>
-    <option value="vi-VN">Tiếng Việt (Vietnamese)</option>
-  </select>
-  <br>
-
-  <button id="recordBtn" class="btn" onclick="toggleRecording()">🎤 Tap to Speak</button>
-  <p id="status">Ready...</p>
-  <p id="transcript"></p>
+  <button id="micBtn">🎤 Start Speaking</button>
+  <p id="status">Tap the microphone to begin.</p>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const rowId = urlParams.get('rowId');
+    const micBtn = document.getElementById('micBtn');
+    const statusText = document.getElementById('status');
+    
+    // Setup Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
 
-    let recognition;
-    let isRecording = false;
-    let finalTranscript = "";
-
-    function toggleRecording() {
-      if (isRecording) {
-        recognition.stop();
-        return;
-      }
-
-      if (!('webkitSpeechRecognition' in window)) {
-        alert("Voice API only works in Chrome or Safari.");
-        return;
-      }
-
-      finalTranscript = ""; 
-      recognition = new webkitSpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = document.getElementById("languageSelect").value; 
-
-      recognition.onstart = function() {
-        isRecording = true;
-        document.getElementById("status").innerHTML = "Listening... 🔴 (Tap Stop when done)";
-        document.getElementById("recordBtn").classList.add("recording");
-        document.getElementById("recordBtn").innerHTML = "⏹️ Stop Recording";
-        document.getElementById("transcript").innerHTML = ""; 
-      };
-
-      recognition.onerror = function(event) {
-        isRecording = false;
-        document.getElementById("status").innerHTML = "❌ Error: " + event.error;
-        document.getElementById("recordBtn").classList.remove("recording");
-        document.getElementById("recordBtn").innerHTML = "🎤 Try Again";
-      };
-
-      recognition.onresult = function(event) {
-        let interimTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript + " ";
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
-        }
-        document.getElementById("transcript").innerHTML = '"' + finalTranscript + interimTranscript + '"';
-      };
-
-      recognition.onend = function() {
-        isRecording = false;
-        document.getElementById("recordBtn").classList.remove("recording");
-        
-        if (finalTranscript.trim() !== "") {
-          document.getElementById("status").innerHTML = "Saving... ⚙️";
-          document.getElementById("recordBtn").innerHTML = "Processing...";
-          document.getElementById("recordBtn").style.backgroundColor = "#555";
-          document.getElementById("recordBtn").disabled = true;
-          
-          sendToGoogleBackend(finalTranscript.trim());
-        } else {
-          document.getElementById("status").innerHTML = "No speech detected. Ready...";
-          document.getElementById("recordBtn").innerHTML = "🎤 Tap to Speak";
-        }
-      };
-
+    micBtn.addEventListener('click', () => {
       recognition.start();
-    }
+      micBtn.classList.add('recording');
+      micBtn.innerText = "🛑 Recording...";
+      statusText.innerText = "Listening... Speak clearly.";
+    });
 
-    function sendToGoogleBackend(text) {
-      const formId = "1FAIpQLScm3Ybfa0VptzYRvNgcqusbhKwUpKAuze7JHPb6GnLJAbhc-g"; 
-      const entryId = "entry.134202282"; 
-      const entryText = "entry.138727830"; 
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      statusText.innerText = "Processing: " + transcript;
+      
+      // Grab the Row ID from the AppSheet URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const rowId = urlParams.get('rowId') || "No_ID_Provided";
 
-      const formUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse?${entryId}=${encodeURIComponent(rowId)}&${entryText}=${encodeURIComponent(text)}&submit=Submit`;
+      // The exact pre-filled link
+      let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScm3Ybfa0VptzYRvNgcqusbhKwUpKAuze7JHPb6GnLJAbhc-g/viewform?usp=pp_url&entry.134202282=TEST_ID&entry.138727830=TEST_TEXT";
+      
+      // Swap our placeholder words with the actual data
+      formUrl = formUrl.replace("TEST_ID", encodeURIComponent(rowId));
+      formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(transcript));
 
-      fetch(formUrl, { mode: 'no-cors' })
-        .then(() => {
-          document.getElementById("status").innerHTML = "✅ Saved! Go back to AppSheet.";
-          document.getElementById("recordBtn").style.backgroundColor = "#2ecc71";
-          document.getElementById("recordBtn").innerHTML = "Done";
-        })
-        .catch(err => {
-          document.getElementById("status").innerHTML = "❌ Connection failed.";
-          resetButton();
-        });
-    }
+      statusText.innerText = "Redirecting to official form...";
+      
+      // Redirect the user straight to the Google Form!
+      window.location.href = formUrl;
+    };
 
-    function resetButton() {
-      document.getElementById("recordBtn").disabled = false;
-      document.getElementById("recordBtn").style.backgroundColor = "#ff4d4d";
-      document.getElementById("recordBtn").innerHTML = "🎤 Try Again";
-    }
+    recognition.onspeechend = () => {
+      recognition.stop();
+      micBtn.classList.remove('recording');
+      micBtn.innerText = "🎤 Start Speaking";
+    };
+
+    recognition.onerror = (event) => {
+      statusText.innerText = "Microphone error: " + event.error;
+      micBtn.classList.remove('recording');
+      micBtn.innerText = "🎤 Start Speaking";
+    };
   </script>
 
 </body>
