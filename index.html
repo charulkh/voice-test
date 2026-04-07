@@ -3,19 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Voice Input Demo</title>
+  <title>EHS TACTICAL - VOICE UPLOAD</title>
   <style>
-    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
-    button { font-size: 24px; padding: 20px 40px; border-radius: 50px; background-color: #4CAF50; color: white; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s; }
-    button.recording { background-color: #f44336; animation: pulse 1.5s infinite; }
-    #status { margin-top: 20px; font-size: 18px; color: #333; text-align: center; padding: 0 20px;}
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    /* 1. Global Reset & Font */
+    body { font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100vh; margin: 0; background-color: #000000; color: #aaaaaa; overflow: hidden; }
+
+    /* Decorative Scanlines Effect */
+    body::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+
+    /* Container for layout */
+    #layout-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80%; width: 100%; text-align: center; }
+
+    /* 2. Header Style */
+    #header-area { margin-bottom: 50px; }
+    h1 { font-size: 32px; color: #ff0000; text-shadow: 0 0 10px #ff0000; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;}
+    #subheader { font-size: 14px; color: #aaaaaa; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* 3. Tactical Button Style */
+    #micBtn { font-family: 'Courier New', Courier, monospace; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; color: #ff0000; padding: 25px 50px; cursor: pointer; background-color: transparent; border: 3px solid #ff0000; position: relative; transition: 0.3s; box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); z-index: 20; /* Octagonal shape */ clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); }
+
+    #micBtn:hover { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6); transform: scale(1.02); }
+
+    /* Recording State Animation */
+    button.recording { background-color: #ff0000 !important; color: #ffffff !important; animation: rec_pulse 1.5s infinite; border: 3px solid #ff0000 !important; box-shadow: 0 0 40px #ff0000; }
+
+    @keyframes rec_pulse { 0% { opacity: 1; transform: scale(1.02); } 50% { opacity: 0.8; transform: scale(1); } 100% { opacity: 1; transform: scale(1.02); } }
+
+    /* 4. Status Style */
+    #status { margin-top: 40px; font-size: 16px; color: #00ff00; text-align: center; max-width: 80%; text-transform: uppercase;}
+    .processing { color: #ff9800; animation: blinker 1s linear infinite; }
+    @keyframes blinker { 50% { opacity: 0; } }
+
+    /* 5. Decorative "Bamboozle" Footer */
+    #system-footer { width: 100%; border-top: 1px solid #333; padding: 10px 0; display: flex; justify-content: space-around; font-size: 10px; color: #555; text-transform: uppercase;}
+    #status-dot { height: 8px; width: 8px; background-color: #00ff00; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blinker 2s linear infinite;}
+
   </style>
 </head>
 <body>
 
-  <button id="micBtn">🎤 Start Speaking</button>
-  <p id="status">Tap the microphone to begin.</p>
+  <div id="layout-container">
+    <div id="header-area">
+      <h1>EHS Speak Up</h1>
+      <p id="subheader">Voice Incident Reporting System</p>
+    </div>
+
+    <button id="micBtn">🎤 Initiate Input</button>
+    <p id="status">System Status: Waiting for user activation.</p>
+  </div>
+
+  <div id="system-footer">
+    <div>ASEAN EHS DIV // V.1.0 // S/N: AD-679901</div>
+    <div><span id="status-dot"></span>System: Online</div>
+    <div>Encryption: Active // Secure Line</div>
+  </div>
 
   <script>
     const micBtn = document.getElementById('micBtn');
@@ -23,49 +64,64 @@
     
     // Setup Speech Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    
+    if (!SpeechRecognition) {
+      statusText.innerText = "CRITICAL ERROR: Speech recognition not supported in this environment.";
+      micBtn.style.display = 'none';
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
 
-    micBtn.addEventListener('click', () => {
-      recognition.start();
-      micBtn.classList.add('recording');
-      micBtn.innerText = "🛑 Recording...";
-      statusText.innerText = "Listening... Speak clearly.";
-    });
+      micBtn.addEventListener('click', () => {
+        try {
+          recognition.start();
+          micBtn.classList.add('recording');
+          micBtn.innerText = "🛑 Recording...";
+          statusText.innerText = "Listening... Transcribing audio data.";
+          statusText.classList.remove('processing');
+        } catch (e) {
+          statusText.innerText = "System Error: Recognition already active.";
+        }
+      });
 
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      statusText.innerText = "Processing: " + transcript;
-      
-      // Grab the Row ID from the AppSheet URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const rowId = urlParams.get('rowId') || "No_ID_Provided";
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        statusText.innerText = "TRANSCRIPTION RECEIVED: " + transcript;
+        statusText.classList.add('processing');
+        
+        // Grab the Row ID from the AppSheet URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const rowId = urlParams.get('rowId') || "No_ID_Provided";
 
-      // The exact pre-filled link
-      let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScm3Ybfa0VptzYRvNgcqusbhKwUpKAuze7JHPb6GnLJAbhc-g/viewform?usp=pp_url&entry.134202282=TEST_ID&entry.138727830=TEST_TEXT";
-      
-      // Swap our placeholder words with the actual data
-      formUrl = formUrl.replace("TEST_ID", encodeURIComponent(rowId));
-      formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(transcript));
+        // The exact pre-filled link
+        let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScm3Ybfa0VptzYRvNgcqusbhKwUpKAuze7JHPb6GnLJAbhc-g/viewform?usp=pp_url&entry.134202282=TEST_ID&entry.138727830=TEST_TEXT";
+        
+        // Swap our placeholder words with the actual data
+        formUrl = formUrl.replace("TEST_ID", encodeURIComponent(rowId));
+        formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(transcript));
 
-      statusText.innerText = "Redirecting to official form...";
-      
-      // Redirect the user straight to the Google Form!
-      window.location.href = formUrl;
-    };
+        statusText.innerText = "UPLOADING DATA PACKET... REDIRECTING...";
+        
+        // Redirect the user straight to the Google Form!
+        setTimeout(() => {
+          window.location.href = formUrl;
+        }, 800);
+      };
 
-    recognition.onspeechend = () => {
-      recognition.stop();
-      micBtn.classList.remove('recording');
-      micBtn.innerText = "🎤 Start Speaking";
-    };
+      recognition.onspeechend = () => {
+        recognition.stop();
+        micBtn.classList.remove('recording');
+        micBtn.innerText = "🎤 Initiate Input";
+      };
 
-    recognition.onerror = (event) => {
-      statusText.innerText = "Microphone error: " + event.error;
-      micBtn.classList.remove('recording');
-      micBtn.innerText = "🎤 Start Speaking";
-    };
+      recognition.onerror = (event) => {
+        statusText.innerText = "Input Error Detected: " + event.error;
+        statusText.style.color = "#ff0000";
+        micBtn.classList.remove('recording');
+        micBtn.innerText = "🎤 Initiate Input";
+      };
+    }
   </script>
 
 </body>
