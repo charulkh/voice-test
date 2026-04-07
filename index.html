@@ -3,66 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EHS TACTICAL - VOICE UPLOAD</title>
+  <title>EHS TACTICAL - VOICE UPLOAD V2</title>
   <style>
-    /* 1. Global Reset & Font */
-    body { font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100vh; margin: 0; background-color: #000000; color: #aaaaaa; overflow: hidden; }
-
-    /* Decorative Scanlines Effect */
+    body { font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding-top: 5vh; height: 95vh; margin: 0; background-color: #000000; color: #aaaaaa; overflow: hidden; }
     body::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none; }
 
-    /* Container for layout */
-    #layout-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80%; width: 100%; text-align: center; }
-
-    /* 2. Header Style */
-    #header-area { margin-bottom: 50px; }
+    #header-area { text-align: center; margin-bottom: 20px; z-index: 20;}
     h1 { font-size: 32px; color: #ff0000; text-shadow: 0 0 10px #ff0000; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;}
     #subheader { font-size: 14px; color: #aaaaaa; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* 3. Tactical Button Style */
-    #micBtn { font-family: 'Courier New', Courier, monospace; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; color: #ff0000; padding: 25px 50px; cursor: pointer; background-color: transparent; border: 3px solid #ff0000; position: relative; transition: 0.3s; box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); z-index: 20; /* Octagonal shape */ clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); }
+    .btn { font-family: 'Courier New', Courier, monospace; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; padding: 15px 30px; cursor: pointer; background-color: transparent; position: relative; transition: 0.3s; z-index: 20; margin: 10px; }
+    
+    #micBtn { color: #ff0000; border: 2px solid #ff0000; box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); }
+    #micBtn:hover { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); transform: scale(1.02); }
+    #micBtn.recording { background-color: #ff0000 !important; color: #ffffff !important; animation: rec_pulse 1.5s infinite; box-shadow: 0 0 30px #ff0000; }
 
-    #micBtn:hover { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6); transform: scale(1.02); }
-
-    /* Recording State Animation */
-    button.recording { background-color: #ff0000 !important; color: #ffffff !important; animation: rec_pulse 1.5s infinite; border: 3px solid #ff0000 !important; box-shadow: 0 0 40px #ff0000; }
+    #submitBtn { color: #00ff00; border: 2px solid #00ff00; box-shadow: 0 0 10px rgba(0, 255, 0, 0.3); clip-path: polygon(10% 0, 90% 0, 100% 20%, 100% 80%, 90% 100%, 10% 100%, 0 80%, 0 20%); display: none; }
+    #submitBtn:hover { box-shadow: 0 0 20px rgba(0, 255, 0, 0.6); background-color: #003300;}
 
     @keyframes rec_pulse { 0% { opacity: 1; transform: scale(1.02); } 50% { opacity: 0.8; transform: scale(1); } 100% { opacity: 1; transform: scale(1.02); } }
 
-    /* 4. Status Style */
-    #status { margin-top: 40px; font-size: 16px; color: #00ff00; text-align: center; max-width: 80%; text-transform: uppercase;}
+    /* Tactical Text Area */
+    #data-terminal { width: 80%; max-width: 600px; margin-top: 10px; z-index: 20; display: flex; flex-direction: column; align-items: stretch;}
+    .terminal-header { background-color: #ff0000; color: #000; padding: 5px 10px; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between;}
+    textarea { background-color: rgba(0, 0, 0, 0.7); color: #00ff00; border: 2px solid #ff0000; border-top: none; font-family: 'Courier New', Courier, monospace; font-size: 16px; padding: 15px; height: 120px; resize: none; outline: none; box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1); }
+    textarea:focus { border-color: #00ff00; box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.3); }
+
+    #status { margin-top: 15px; font-size: 14px; color: #00ff00; text-align: center; text-transform: uppercase; z-index: 20;}
     .processing { color: #ff9800; animation: blinker 1s linear infinite; }
     @keyframes blinker { 50% { opacity: 0; } }
 
-    /* 5. Decorative "Bamboozle" Footer */
-    #system-footer { width: 100%; border-top: 1px solid #333; padding: 10px 0; display: flex; justify-content: space-around; font-size: 10px; color: #555; text-transform: uppercase;}
+    #system-footer { position: absolute; bottom: 0; width: 100%; border-top: 1px solid #333; padding: 10px 0; display: flex; justify-content: space-around; font-size: 10px; color: #555; text-transform: uppercase; z-index: 20; background-color: #000;}
     #status-dot { height: 8px; width: 8px; background-color: #00ff00; border-radius: 50%; display: inline-block; margin-right: 5px; animation: blinker 2s linear infinite;}
-
   </style>
 </head>
 <body>
 
-  <div id="layout-container">
-    <div id="header-area">
-      <h1>EHS Speak Up</h1>
-      <p id="subheader">Voice Incident Reporting System</p>
-    </div>
-
-    <button id="micBtn">🎤 Initiate Input</button>
-    <p id="status">System Status: Waiting for user activation.</p>
+  <div id="header-area">
+    <h1>EHS Speak Up</h1>
+    <p id="subheader">Voice Incident Reporting System</p>
   </div>
 
+  <button id="micBtn" class="btn">🎤 Initiate Input</button>
+
+  <div id="data-terminal">
+    <div class="terminal-header">
+      <span>Live Transcription Data</span>
+    </div>
+    <textarea id="transcriptBox" placeholder="Awaiting voice input... You may also type or edit text here before submitting."></textarea>
+  </div>
+  
+  <button id="submitBtn" class="btn">💾 UPLOAD SECURE DATA</button>
+  
+  <p id="status">System Status: Ready for activation.</p>
+
   <div id="system-footer">
-    <div>ASEAN EHS DIV // V.1.0 // S/N: AD-679901</div>
+    <div>ASEAN EHS DIV // V.2.0 // S/N: AD-679902</div>
     <div><span id="status-dot"></span>System: Online</div>
     <div>Encryption: Active // Secure Line</div>
   </div>
 
   <script>
     const micBtn = document.getElementById('micBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const transcriptBox = document.getElementById('transcriptBox');
     const statusText = document.getElementById('status');
     
-    // Setup Speech Recognition
+    let finalTranscript = '';
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
@@ -70,57 +78,93 @@
       micBtn.style.display = 'none';
     } else {
       const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.continuous = true; 
+      recognition.interimResults = true; // This is the magic for LIVE typing
 
       micBtn.addEventListener('click', () => {
+        // If already recording, stop it
+        if (micBtn.classList.contains('recording')) {
+          recognition.stop();
+          return;
+        }
+        
+        // Start recording
+        finalTranscript = transcriptBox.value; // Save whatever is already in the box
         try {
           recognition.start();
           micBtn.classList.add('recording');
-          micBtn.innerText = "🛑 Recording...";
-          statusText.innerText = "Listening... Transcribing audio data.";
+          micBtn.innerText = "🛑 STOP INPUT";
+          statusText.innerText = "Listening... Transcribing audio data live.";
           statusText.classList.remove('processing');
+          statusText.style.color = "#00ff00";
+          submitBtn.style.display = 'none';
         } catch (e) {
           statusText.innerText = "System Error: Recognition already active.";
         }
       });
 
       recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        statusText.innerText = "TRANSCRIPTION RECEIVED: " + transcript;
-        statusText.classList.add('processing');
-        
-        // Grab the Row ID from the AppSheet URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const rowId = urlParams.get('rowId') || "No_ID_Provided";
-
-        // The exact pre-filled link
-        let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScm3Ybfa0VptzYRvNgcqusbhKwUpKAuze7JHPb6GnLJAbhc-g/viewform?usp=pp_url&entry.134202282=TEST_ID&entry.138727830=TEST_TEXT";
-        
-        // Swap our placeholder words with the actual data
-        formUrl = formUrl.replace("TEST_ID", encodeURIComponent(rowId));
-        formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(transcript));
-
-        statusText.innerText = "UPLOADING DATA PACKET... REDIRECTING...";
-        
-        // Redirect the user straight to the Google Form!
-        setTimeout(() => {
-          window.location.href = formUrl;
-        }, 800);
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + ' ';
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        // Push the live text into the editable box
+        transcriptBox.value = finalTranscript + interimTranscript;
       };
 
-      recognition.onspeechend = () => {
-        recognition.stop();
+      recognition.onend = () => {
         micBtn.classList.remove('recording');
-        micBtn.innerText = "🎤 Initiate Input";
+        micBtn.innerText = "🎤 RESUME INPUT";
+        statusText.innerText = "AUDIO CAPTURED. PLEASE REVIEW OR EDIT DATA.";
+        statusText.style.color = "#00ff00";
+        
+        // Show the upload button if there is actually text to send
+        if(transcriptBox.value.trim().length > 0) {
+            submitBtn.style.display = 'inline-block';
+        }
       };
 
       recognition.onerror = (event) => {
         statusText.innerText = "Input Error Detected: " + event.error;
         statusText.style.color = "#ff0000";
         micBtn.classList.remove('recording');
-        micBtn.innerText = "🎤 Initiate Input";
+        micBtn.innerText = "🎤 INITIATE INPUT";
       };
+
+      // Show upload button if they manually type instead of speaking
+      transcriptBox.addEventListener('input', () => {
+         if(transcriptBox.value.trim().length > 0) {
+            submitBtn.style.display = 'inline-block';
+         } else {
+            submitBtn.style.display = 'none';
+         }
+      });
+
+      // The final save/redirect!
+      submitBtn.addEventListener('click', () => {
+        statusText.innerText = "ENCRYPTING AND UPLOADING DATA PACKET...";
+        statusText.classList.add('processing');
+        submitBtn.style.display = 'none';
+        micBtn.style.display = 'none';
+
+        const userText = transcriptBox.value.trim();
+        const urlParams = new URLSearchParams(window.location.search);
+        const rowId = urlParams.get('rowId') || "No_ID_Provided";
+
+        // Your exact pre-filled link
+        let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScm3Ybfa0VptzYRvNgcqusbhKwUpKAuze7JHPb6GnLJAbhc-g/viewform?usp=pp_url&entry.134202282=TEST_ID&entry.138727830=TEST_TEXT";
+        
+        formUrl = formUrl.replace("TEST_ID", encodeURIComponent(rowId));
+        formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(userText));
+
+        setTimeout(() => {
+          window.location.href = formUrl;
+        }, 800);
+      });
     }
   </script>
 
