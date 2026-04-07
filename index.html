@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EHS TACTICAL - VOICE UPLOAD V4</title>
+  <title>EHS TACTICAL - VOICE UPLOAD V5</title>
   <style>
     body { font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding-top: 2vh; height: 98vh; margin: 0; background-color: #000000; color: #aaaaaa; overflow-x: hidden; }
     body::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none; }
@@ -37,8 +37,9 @@
     textarea { background-color: rgba(0, 0, 0, 0.7); color: #00ff00; border: 2px solid #ff0000; border-top: none; font-family: 'Courier New', Courier, monospace; font-size: 14px; padding: 10px; height: 80px; resize: none; outline: none; box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1); }
     textarea.blue-text { color: #00aaff; border-color: #00aaff; box-shadow: inset 0 0 10px rgba(0, 170, 255, 0.1);}
     textarea:focus { border-color: #00ff00; }
+    textarea.blue-text:focus { border-color: #00aaff; }
 
-    #translation-terminal { display: none; } /* Hidden by default */
+    #translation-terminal { display: none; } 
 
     #status { margin-top: 10px; font-size: 14px; color: #00ff00; text-align: center; text-transform: uppercase; z-index: 20; height: 20px;}
     .processing { color: #ff9800; animation: blinker 1s linear infinite; }
@@ -72,21 +73,21 @@
   <div class="terminals-wrapper">
     <div class="data-terminal">
       <div class="terminal-header">Raw Native Audio Feed</div>
-      <textarea id="transcriptBox" placeholder="Awaiting voice input..."></textarea>
+      <textarea id="transcriptBox" placeholder="Select language, tap initiate, and speak clearly..."></textarea>
     </div>
 
     <div class="data-terminal" id="translation-terminal">
-      <div class="terminal-header blue">Encrypted English Translation</div>
-      <textarea id="translationBox" class="blue-text" placeholder="Translating payload..."></textarea>
+      <div class="terminal-header blue">Encrypted English Output (Editable)</div>
+      <textarea id="translationBox" class="blue-text" placeholder="Translation will appear here..."></textarea>
     </div>
   </div>
   
-  <button id="submitBtn" class="btn">💾 UPLOAD TO SECURE SERVER</button>
+  <button id="submitBtn" class="btn">💾 UPLOAD FINAL ENGLISH DATA</button>
   
   <p id="status">System Status: Ready.</p>
 
   <div id="system-footer">
-    <div>ASEAN EHS DIV // V.4.0 // TRANSLATION NODE ACTIVE</div>
+    <div>ASEAN EHS DIV // V.5.0 // TRANSLATION NODE ACTIVE</div>
     <div><span id="status-dot"></span>System: Online</div>
     <div>Encryption: Active // Secure Line</div>
   </div>
@@ -114,7 +115,7 @@
 
       micBtn.addEventListener('click', () => {
         if (micBtn.classList.contains('recording')) {
-          recognition.stop();
+          recognition.stop(); // This triggers onend automatically
           return;
         }
         
@@ -129,7 +130,7 @@
           recognition.start();
           micBtn.classList.add('recording');
           micBtn.innerText = "🛑 STOP INPUT";
-          statusText.innerText = "Listening... Intercepting native audio.";
+          statusText.innerText = "Listening... Speak clearly into the microphone.";
           statusText.classList.remove('processing');
           statusText.style.color = "#00ff00";
         } catch (e) {
@@ -149,27 +150,33 @@
         transcriptBox.value = finalTranscript + interimTranscript;
       };
 
+      // THIS FIRES WHEN RECORDING STOPS (Either you clicked Stop, or it timed out from silence)
       recognition.onend = () => {
         micBtn.classList.remove('recording');
         micBtn.innerText = "🎤 RESUME INPUT";
         
         const rawText = transcriptBox.value.trim();
 
-        if (rawText.length > 0) {
-            // If English, just show the submit button
-            if (langSelect.value === 'en-US') {
+        if (langSelect.value === 'en-US') {
+            if (rawText.length > 0) {
                 statusText.innerText = "AUDIO CAPTURED. READY FOR UPLOAD.";
                 statusText.style.color = "#00ff00";
                 submitBtn.style.display = 'inline-block';
             } else {
-                // If not English, trigger the translation API!
+                statusText.innerText = "NO AUDIO DETECTED. PLEASE TRY AGAIN.";
+                statusText.style.color = "#ff9800";
+            }
+        } else {
+            // For foreign languages, always show the translation box now
+            translationTerminal.style.display = 'flex';
+            submitBtn.style.display = 'inline-block';
+
+            if (rawText.length > 0) {
                 statusText.innerText = "TRANSLATING SECURE PAYLOAD...";
                 statusText.style.color = "#ff9800";
                 statusText.classList.add('processing');
-                translationTerminal.style.display = 'flex';
                 translationBox.value = "Pinging translation server...";
 
-                // We extract just the 2-letter code (e.g., 'vi' from 'vi-VN')
                 let sourceLang = langSelect.value.split('-')[0];
                 let apiURL = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(rawText)}&langpair=${sourceLang}|en`;
 
@@ -178,21 +185,23 @@
                   .then(data => {
                       if (data.responseData && data.responseData.translatedText) {
                           translationBox.value = data.responseData.translatedText;
-                          statusText.innerText = "TRANSLATION COMPLETE. AWAITING UPLOAD.";
+                          statusText.innerText = "TRANSLATION COMPLETE. REVIEW BEFORE UPLOAD.";
                       } else {
-                          translationBox.value = "[Translation API Error - Manual review required]";
-                          statusText.innerText = "TRANSLATION FAILED. PROCEEDING WITH RAW DATA.";
+                          translationBox.value = "";
+                          statusText.innerText = "TRANSLATION FAILED. PLEASE TYPE ENGLISH MANUALLY.";
                       }
                       statusText.style.color = "#00ff00";
                       statusText.classList.remove('processing');
-                      submitBtn.style.display = 'inline-block';
                   })
                   .catch(error => {
-                      translationBox.value = "[Translation API Offline]";
-                      statusText.innerText = "TRANSLATION ERROR.";
+                      translationBox.value = "";
+                      statusText.innerText = "TRANSLATION ERROR. PLEASE TYPE ENGLISH MANUALLY.";
                       statusText.classList.remove('processing');
-                      submitBtn.style.display = 'inline-block';
                   });
+            } else {
+                statusText.innerText = "NO AUDIO DETECTED. YOU MAY TYPE MANUALLY.";
+                statusText.style.color = "#ff9800";
+                translationBox.value = ""; // Leave it empty so they can type
             }
         }
       };
@@ -204,16 +213,19 @@
         micBtn.innerText = "🎤 INITIATE INPUT";
       };
 
+      // Ensure the correct box gets sent to the form
       submitBtn.addEventListener('click', () => {
         statusText.innerText = "ENCRYPTING AND UPLOADING DATA PACKET...";
         statusText.classList.add('processing');
         submitBtn.style.display = 'none';
         micBtn.style.display = 'none';
 
-        // Determine what text to send to Google Form
-        let finalUploadText = transcriptBox.value.trim();
-        if (langSelect.value !== 'en-US' && translationBox.value.length > 0 && !translationBox.value.includes("Pinging")) {
-            // Send the English translation if they used another language!
+        let finalUploadText = "";
+        
+        // STRICT RULE: If English, use top box. If anything else, use bottom blue box.
+        if (langSelect.value === 'en-US') {
+            finalUploadText = transcriptBox.value.trim();
+        } else {
             finalUploadText = translationBox.value.trim();
         }
 
