@@ -231,10 +231,13 @@
         const rowId = urlParams.get('rowId') || "No_ID_Provided";
 
         // Secret background upload URL 
-        let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdX5azkFqnQWH7ZrZ4sOE9AW7EgN4fdS4h3O9Bzhif6t2Ypng/formResponse?usp=pp_url&entry.608480378=TEST_ID&entry.678632541=TEST_TEXT&submit=Submit";
+        let formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdX5azkFqnQWH7ZrZ4sOE9AW7EgN4fdS4h3O9Bzhif6t2Ypng/formResponse?usp=pp_url&entry.608480378=TEST_ID&entry.678632541=TEST_TEXT&entry.701304923=TEST_NATIVE&submit=Submit";
         
+        let rawNativeText = transcriptBox.value.trim();
+
         formUrl = formUrl.replace("TEST_ID", encodeURIComponent(rowId));
         formUrl = formUrl.replace("TEST_TEXT", encodeURIComponent(finalUploadText));
+        formUrl = formUrl.replace("TEST_NATIVE", encodeURIComponent(rawNativeText));
 
         // The Silent Submit Magic
         fetch(formUrl, { mode: 'no-cors' })
