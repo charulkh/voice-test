@@ -223,6 +223,43 @@
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+    // 1. Detect when the user types manually
+    transcriptBox.addEventListener('input', () => {
+      const rawText = transcriptBox.value.trim();
+
+      if (langSelect.value === 'en-US') {
+        if (rawText.length > 0) {
+          submitBtn.style.display = 'inline-block';
+          translationTerminal.style.display = 'none';
+          statusText.innerText = "English detected. Ready to submit.";
+          statusText.style.color = "#10B981";
+        } else {
+          submitBtn.style.display = 'none';
+          statusText.innerText = "System Status: Ready.";
+          statusText.style.color = "var(--text-light)";
+        }
+      } else {
+         // If they are typing in another language, hide submit until translated
+         submitBtn.style.display = 'none';
+      }
+    });
+
+    // 2. Detect if they change the language dropdown AFTER typing
+    langSelect.addEventListener('change', () => {
+      const rawText = transcriptBox.value.trim();
+      
+      if (langSelect.value === 'en-US' && rawText.length > 0) {
+         submitBtn.style.display = 'inline-block';
+         translationTerminal.style.display = 'none';
+         statusText.innerText = "English detected. Ready to submit.";
+         statusText.style.color = "#10B981";
+      } else if (rawText.length > 0) {
+         submitBtn.style.display = 'none';
+         statusText.innerText = "Please click 'Translate Text' to continue.";
+         statusText.style.color = "#F59E0B";
+      }
+    });
+
     // Direct Google Translate Engine (No API Key Required)
     async function performTranslation(rawText) {
       if (!rawText || rawText.trim().length === 0) {
@@ -321,6 +358,13 @@
           }
         }
         transcriptBox.value = finalTranscript + interimTranscript;
+        
+        // Ensure Submit button pops up immediately if speaking English
+        if (langSelect.value === 'en-US') {
+            submitBtn.style.display = 'inline-block';
+            statusText.innerText = "English detected. Ready to submit.";
+            statusText.style.color = "#10B981";
+        }
       };
 
       recognition.onend = () => {
