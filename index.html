@@ -18,6 +18,9 @@
       --success-green: #10B981;
       --success-hover: #059669;
       --border-color: #E2E8F0;
+      --info-bg: #EFF6FF;
+      --info-border: #BFDBFE;
+      --info-text: #1E3A8A;
     }
 
     body { 
@@ -33,9 +36,29 @@
       overflow-x: hidden; 
     }
 
-    #header-area { text-align: center; margin-bottom: 25px; z-index: 20; }
+    #header-area { text-align: center; margin-bottom: 20px; z-index: 20; }
     h1 { font-size: 28px; color: var(--text-main); margin: 0 0 8px 0; font-weight: 700; letter-spacing: -0.5px;}
     #subheader { font-size: 15px; color: var(--text-light); margin: 0; font-weight: 500; }
+
+    /* New Instructions Box */
+    .instruction-box {
+      background-color: var(--info-bg);
+      border: 1px solid var(--info-border);
+      color: var(--info-text);
+      padding: 15px 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 610px;
+      margin-bottom: 25px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      z-index: 20;
+      box-sizing: border-box;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .instruction-box strong { font-size: 14px; display: block; margin-bottom: 8px; color: #1D4ED8; }
+    .instruction-box ol { margin: 0 0 0 20px; padding: 0; }
+    .instruction-box li { margin-bottom: 6px; }
 
     .lang-container { 
       z-index: 20; 
@@ -73,7 +96,7 @@
       padding: 12px 24px; 
       cursor: pointer; 
       border: none;
-      border-radius: 50px; /* Cozy pill shape */
+      border-radius: 50px; 
       color: white;
       transition: all 0.2s ease; 
       margin: 5px; 
@@ -166,6 +189,16 @@
   <div id="header-area">
     <h1>EHS Speak Up</h1>
     <p id="subheader">ASEAN Voice Reporting Interface</p>
+  </div>
+
+  <div class="instruction-box">
+    <strong>How to use this tool:</strong>
+    <ol>
+      <li>Select your preferred language.</li>
+      <li>Use the <strong>Tap to Speak</strong> button OR type manually.</li>
+      <li>Click <strong>Translate Text</strong> (if using a non-English language).</li>
+      <li>Click the green <strong>Submit Report</strong> button when ready!</li>
+    </ol>
   </div>
 
   <div class="lang-container">
